@@ -21,3 +21,8 @@ Version: v1alpha1
 
 - controller-gen
     generate CRD for the type
+    1. export GOPATH=~/go
+    2. go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.6.0
+    3. export PATH=$PATH:$GOPATH/bin
+    4. source ~/.bashrc
+    5. controller-gen --version
