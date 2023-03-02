@@ -7,12 +7,18 @@ import (
 	klientset "github.com/vitu1234/kluster/pkg/client/clientset/versioned"
 	kinf "github.com/vitu1234/kluster/pkg/client/informers/externalversions/vitu.dev/v1alpha1"
 	klister "github.com/vitu1234/kluster/pkg/client/listers/vitu.dev/v1alpha1"
+	"github.com/vitu1234/kluster/pkg/do"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 )
 
 type Controller struct {
+
+	//k8s client object
+	client kubernetes.Interface
+
 	// clientset for custom resource kluster
 	klient klientset.Interface
 	// check if kluster has synced
@@ -23,7 +29,7 @@ type Controller struct {
 	wq workqueue.RateLimitingInterface
 }
 
-func NewController(klient klientset.Interface, klusterInformer kinf.KlusterInformer) *Controller {
+func NewController(client kubernetes.Interface, klient klientset.Interface, klusterInformer kinf.KlusterInformer) *Controller {
 	c := &Controller{
 		klient:        klient,
 		klusterSynced: klusterInformer.Informer().HasSynced,
@@ -83,6 +89,14 @@ func (c *Controller) processNextItem() bool {
 	}
 
 	log.Printf("Kluster spec that we have is %v\n", kluster.Spec)
+
+	//call digital ocean apis
+	clusterID, err := do.Create(c.client, kluster.Spec)
+	if err != nil {
+		log.Printf("error %s, creating native k8s clientset\n", err.Error())
+	}
+
+	log.Printf("Cluster ID: %s\n", clusterID)
 
 	return true
 }

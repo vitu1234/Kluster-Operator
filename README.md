@@ -26,3 +26,7 @@ Version: v1alpha1
     3. export PATH=$PATH:$GOPATH/bin
     4. source ~/.bashrc
     5. controller-gen --version
+
+
+- secret.yaml 
+    kubectl create secret generic dosecret --from-literal token=dop_v1_5b64f1065f995a9c88f8b3ab3a6f3ce5895fb6577503a636fc28803415

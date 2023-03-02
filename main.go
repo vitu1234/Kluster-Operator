@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/util/homedir"
 
@@ -16,6 +17,7 @@ import (
 	klient "github.com/vitu1234/kluster/pkg/client/clientset/versioned"
 	kinfFac "github.com/vitu1234/kluster/pkg/client/informers/externalversions"
 	controller "github.com/vitu1234/kluster/pkg/controller"
+	// "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func main() {
@@ -44,7 +46,14 @@ func main() {
 
 	klientset, err := klient.NewForConfig(config) // clientset because it is used to interact with clients from different API versions
 	if err != nil {
-		fmt.Printf("Error getting clientset: %s\n", err.Error())
+		fmt.Printf("Error getting klientset: %s\n", err.Error())
+	}
+
+	//clientset for k8s native resources
+
+	clientset, err := kubernetes.NewForConfig(config) // clientset because it is used to interact with clients from different API versions
+	if err != nil {
+		fmt.Printf("Error getting standard clientset: %s\n", err.Error())
 	}
 
 	// fmt.Println(clientset)
@@ -60,7 +69,7 @@ func main() {
 	infoFactory := kinfFac.NewSharedInformerFactory(klientset, 20*time.Minute)
 
 	ch := make(chan struct{})
-	c := controller.NewController(klientset, infoFactory.Vitu().V1alpha1().Klusters())
+	c := controller.NewController(clientset, klientset, infoFactory.Vitu().V1alpha1().Klusters())
 
 	infoFactory.Start(ch)
 	if err := c.Run(ch); err != nil {
