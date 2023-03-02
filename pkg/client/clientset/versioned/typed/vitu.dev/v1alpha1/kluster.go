@@ -43,6 +43,7 @@ type KlustersGetter interface {
 type KlusterInterface interface {
 	Create(ctx context.Context, kluster *v1alpha1.Kluster, opts v1.CreateOptions) (*v1alpha1.Kluster, error)
 	Update(ctx context.Context, kluster *v1alpha1.Kluster, opts v1.UpdateOptions) (*v1alpha1.Kluster, error)
+	UpdateStatus(ctx context.Context, kluster *v1alpha1.Kluster, opts v1.UpdateOptions) (*v1alpha1.Kluster, error)
 	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
 	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.Kluster, error)
@@ -50,6 +51,7 @@ type KlusterInterface interface {
 	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
 	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Kluster, err error)
 	Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error)
+	ApplyStatus(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error)
 	KlusterExpansion
 }
 
@@ -139,6 +141,22 @@ func (c *klusters) Update(ctx context.Context, kluster *v1alpha1.Kluster, opts v
 	return
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *klusters) UpdateStatus(ctx context.Context, kluster *v1alpha1.Kluster, opts v1.UpdateOptions) (result *v1alpha1.Kluster, err error) {
+	result = &v1alpha1.Kluster{}
+	err = c.client.Put().
+		Namespace(c.ns).
+		Resource("klusters").
+		Name(kluster.Name).
+		SubResource("status").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(kluster).
+		Do(ctx).
+		Into(result)
+	return
+}
+
 // Delete takes name of the kluster and deletes it. Returns an error if one occurs.
 func (c *klusters) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
@@ -200,6 +218,36 @@ func (c *klusters) Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterAp
 		Namespace(c.ns).
 		Resource("klusters").
 		Name(*name).
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *klusters) ApplyStatus(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error) {
+	if kluster == nil {
+		return nil, fmt.Errorf("kluster provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(kluster)
+	if err != nil {
+		return nil, err
+	}
+
+	name := kluster.Name
+	if name == nil {
+		return nil, fmt.Errorf("kluster.Name must be provided to Apply")
+	}
+
+	result = &v1alpha1.Kluster{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Namespace(c.ns).
+		Resource("klusters").
+		Name(*name).
+		SubResource("status").
 		VersionedParams(&patchOpts, scheme.ParameterCodec).
 		Body(data).
 		Do(ctx).

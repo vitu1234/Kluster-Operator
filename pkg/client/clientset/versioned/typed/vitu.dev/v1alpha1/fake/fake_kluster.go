@@ -104,6 +104,18 @@ func (c *FakeKlusters) Update(ctx context.Context, kluster *v1alpha1.Kluster, op
 	return obj.(*v1alpha1.Kluster), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeKlusters) UpdateStatus(ctx context.Context, kluster *v1alpha1.Kluster, opts v1.UpdateOptions) (*v1alpha1.Kluster, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(klustersResource, "status", c.ns, kluster), &v1alpha1.Kluster{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.Kluster), err
+}
+
 // Delete takes name of the kluster and deletes it. Returns an error if one occurs.
 func (c *FakeKlusters) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
@@ -146,6 +158,29 @@ func (c *FakeKlusters) Apply(ctx context.Context, kluster *vitudevv1alpha1.Klust
 	}
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(klustersResource, c.ns, *name, types.ApplyPatchType, data), &v1alpha1.Kluster{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.Kluster), err
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *FakeKlusters) ApplyStatus(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error) {
+	if kluster == nil {
+		return nil, fmt.Errorf("kluster provided to Apply must not be nil")
+	}
+	data, err := json.Marshal(kluster)
+	if err != nil {
+		return nil, err
+	}
+	name := kluster.Name
+	if name == nil {
+		return nil, fmt.Errorf("kluster.Name must be provided to Apply")
+	}
+	obj, err := c.Fake.
+		Invokes(testing.NewPatchSubresourceAction(klustersResource, c.ns, *name, types.ApplyPatchType, data, "status"), &v1alpha1.Kluster{})
 
 	if obj == nil {
 		return nil, err

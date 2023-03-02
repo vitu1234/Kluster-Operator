@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"context"
 	"log"
 	"time"
 
+	"github.com/vitu1234/kluster/pkg/apis/vitu.dev/v1alpha1"
 	klientset "github.com/vitu1234/kluster/pkg/client/clientset/versioned"
 	kinf "github.com/vitu1234/kluster/pkg/client/informers/externalversions/vitu.dev/v1alpha1"
 	klister "github.com/vitu1234/kluster/pkg/client/listers/vitu.dev/v1alpha1"
@@ -103,6 +105,8 @@ func (c *Controller) processNextItem() bool {
 
 	log.Printf("Cluster ID: %s\n", clusterID)
 
+	c.updateStatus(clusterID, "creating")
+
 	return true
 }
 
@@ -114,4 +118,8 @@ func (c *Controller) handleAdd(obj interface{}) {
 func (c *Controller) handleDel(obj interface{}) {
 	log.Println("handleDel was called")
 	c.wq.Add(obj)
+}
+
+func (c *Controller) updateStatus(id, progress string, kluster *v1alpha1.Kluster) {
+	c.klient.VituV1alpha1().Klusters("").UpdateStatus(context.Background(), kluster)
 }

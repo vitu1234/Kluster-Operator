@@ -21,10 +21,11 @@ package v1alpha1
 // KlusterSpecApplyConfiguration represents an declarative configuration of the KlusterSpec type for use
 // with apply.
 type KlusterSpecApplyConfiguration struct {
-	Name      *string                      `json:"name,omitempty"`
-	Region    *string                      `json:"region,omitempty"`
-	Version   *string                      `json:"version,omitempty"`
-	NodePools []NodePoolApplyConfiguration `json:"nodePools,omitempty"`
+	Name        *string                      `json:"name,omitempty"`
+	Region      *string                      `json:"region,omitempty"`
+	Version     *string                      `json:"version,omitempty"`
+	TokenSecret *string                      `json:"tokenSecret,omitempty"`
+	NodePools   []NodePoolApplyConfiguration `json:"nodePools,omitempty"`
 }
 
 // KlusterSpecApplyConfiguration constructs an declarative configuration of the KlusterSpec type for use with
@@ -54,6 +55,14 @@ func (b *KlusterSpecApplyConfiguration) WithRegion(value string) *KlusterSpecApp
 // If called multiple times, the Version field is set to the value of the last call.
 func (b *KlusterSpecApplyConfiguration) WithVersion(value string) *KlusterSpecApplyConfiguration {
 	b.Version = &value
+	return b
+}
+
+// WithTokenSecret sets the TokenSecret field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the TokenSecret field is set to the value of the last call.
+func (b *KlusterSpecApplyConfiguration) WithTokenSecret(value string) *KlusterSpecApplyConfiguration {
+	b.TokenSecret = &value
 	return b
 }
 

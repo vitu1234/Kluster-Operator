@@ -26,6 +26,8 @@ Version: v1alpha1
     3. export PATH=$PATH:$GOPATH/bin
     4. source ~/.bashrc
     5. controller-gen --version
+    6. controller-gen command run in in project path: 
+        controller-gen paths=github.com/vitu1234/kluster/pkg/apis/vitu.dev/v1alpha1 crd:trivialVersions=true crd:crdVersions=v1 output:crd:artifacts:config=manifests
 
 
 - secret.yaml 

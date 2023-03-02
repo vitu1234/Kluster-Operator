@@ -33,6 +33,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &vitudevv1alpha1.KlusterApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("KlusterSpec"):
 		return &vitudevv1alpha1.KlusterSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("KlusterStatus"):
+		return &vitudevv1alpha1.KlusterStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("NodePool"):
 		return &vitudevv1alpha1.NodePoolApplyConfiguration{}
 
