@@ -2,7 +2,6 @@ package do
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 
@@ -20,7 +19,7 @@ func Create(c kubernetes.Interface, spec v1alpha1.KlusterSpec) (string, error) {
 	}
 
 	client := godo.NewFromToken(token)
-	fmt.Println(client)
+	// fmt.Println(client)
 	//query k8s apis and get the secret name
 
 	createRequest := &godo.KubernetesClusterCreateRequest{
@@ -37,6 +36,7 @@ func Create(c kubernetes.Interface, spec v1alpha1.KlusterSpec) (string, error) {
 	}
 
 	cluster, _, err := client.Kubernetes.Create(context.Background(), createRequest)
+
 	return cluster.ID, nil
 }
 

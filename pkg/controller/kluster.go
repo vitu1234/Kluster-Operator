@@ -31,6 +31,7 @@ type Controller struct {
 
 func NewController(client kubernetes.Interface, klient klientset.Interface, klusterInformer kinf.KlusterInformer) *Controller {
 	c := &Controller{
+		client:        client,
 		klient:        klient,
 		klusterSynced: klusterInformer.Informer().HasSynced,
 		kLister:       klusterInformer.Lister(),
@@ -72,14 +73,18 @@ func (c *Controller) processNextItem() bool {
 		return false
 	}
 
+	defer c.wq.Forget(item)
+
 	key, err := cache.MetaNamespaceKeyFunc(item)
 	if err != nil {
 		log.Printf("Error %s calling Namespace key funct on cache fro item\n", err.Error())
+		return false
 	}
 
 	ns, name, err := cache.SplitMetaNamespaceKey(key)
 	if err != nil {
 		log.Printf("Splitting key into namespace and name, error %s\n", err.Error())
+		return false
 	}
 
 	// get the created item from the lister
