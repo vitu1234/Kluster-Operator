@@ -1,19 +1,21 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
+	"time"
 
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/util/homedir"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
 
 	klient "github.com/vitu1234/kluster/pkg/client/clientset/versioned"
+	kinfFac "github.com/vitu1234/kluster/pkg/client/informers/externalversions"
+	controller "github.com/vitu1234/kluster/pkg/controller"
 )
 
 func main() {
@@ -47,11 +49,21 @@ func main() {
 
 	// fmt.Println(clientset)
 
-	klusters, err := klientset.VituV1alpha1().Klusters("").List(context.Background(), metav1.ListOptions{})
+	// klusters, err := klientset.VituV1alpha1().Klusters("").List(context.Background(), metav1.ListOptions{})
 
-	if err != nil {
-		log.Printf("sError getting klusters: %s \n", err)
+	// if err != nil {
+	// 	log.Printf("sError getting klusters: %s \n", err)
+	// }
+
+	// fmt.Println(klusters)
+
+	infoFactory := kinfFac.NewSharedInformerFactory(klientset, 20*time.Minute)
+
+	ch := make(chan struct{})
+	c := controller.NewController(klientset, infoFactory.Vitu().V1alpha1().Klusters())
+
+	infoFactory.Start(ch)
+	if err := c.Run(ch); err != nil {
+		log.Printf("Error running controller: %s\n", err.Error())
 	}
-
-	fmt.Println(klusters)
 }

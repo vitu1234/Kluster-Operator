@@ -20,12 +20,12 @@ package v1alpha1
 
 import (
 	"context"
-	// json "encoding/json"
-	// "fmt"
+	json "encoding/json"
+	"fmt"
 	"time"
 
 	v1alpha1 "github.com/vitu1234/kluster/pkg/apis/vitu.dev/v1alpha1"
-	// vitudevv1alpha1 "github.com/vitu1234/kluster/pkg/client/applyconfiguration/vitu.dev/v1alpha1"
+	vitudevv1alpha1 "github.com/vitu1234/kluster/pkg/client/applyconfiguration/vitu.dev/v1alpha1"
 	scheme "github.com/vitu1234/kluster/pkg/client/clientset/versioned/scheme"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -49,7 +49,7 @@ type KlusterInterface interface {
 	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.KlusterList, error)
 	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
 	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Kluster, err error)
-	// Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error)
+	Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error)
 	KlusterExpansion
 }
 
@@ -182,27 +182,27 @@ func (c *klusters) Patch(ctx context.Context, name string, pt types.PatchType, d
 }
 
 // Apply takes the given apply declarative configuration, applies it and returns the applied kluster.
-// func (c *klusters) Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error) {
-// 	if kluster == nil {
-// 		return nil, fmt.Errorf("kluster provided to Apply must not be nil")
-// 	}
-// 	patchOpts := opts.ToPatchOptions()
-// 	data, err := json.Marshal(kluster)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	name := kluster.Name
-// 	if name == nil {
-// 		return nil, fmt.Errorf("kluster.Name must be provided to Apply")
-// 	}
-// 	result = &v1alpha1.Kluster{}
-// 	err = c.client.Patch(types.ApplyPatchType).
-// 		Namespace(c.ns).
-// 		Resource("klusters").
-// 		Name(*name).
-// 		VersionedParams(&patchOpts, scheme.ParameterCodec).
-// 		Body(data).
-// 		Do(ctx).
-// 		Into(result)
-// 	return
-// }
+func (c *klusters) Apply(ctx context.Context, kluster *vitudevv1alpha1.KlusterApplyConfiguration, opts v1.ApplyOptions) (result *v1alpha1.Kluster, err error) {
+	if kluster == nil {
+		return nil, fmt.Errorf("kluster provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(kluster)
+	if err != nil {
+		return nil, err
+	}
+	name := kluster.Name
+	if name == nil {
+		return nil, fmt.Errorf("kluster.Name must be provided to Apply")
+	}
+	result = &v1alpha1.Kluster{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Namespace(c.ns).
+		Resource("klusters").
+		Name(*name).
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}

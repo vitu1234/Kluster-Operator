@@ -19,6 +19,8 @@ limitations under the License.
 package applyconfiguration
 
 import (
+	v1alpha1 "github.com/vitu1234/kluster/pkg/apis/vitu.dev/v1alpha1"
+	vitudevv1alpha1 "github.com/vitu1234/kluster/pkg/client/applyconfiguration/vitu.dev/v1alpha1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 )
 
@@ -26,6 +28,14 @@ import (
 // apply configuration type exists for the given GroupVersionKind.
 func ForKind(kind schema.GroupVersionKind) interface{} {
 	switch kind {
+	// Group=vitu.dev, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithKind("Kluster"):
+		return &vitudevv1alpha1.KlusterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("KlusterSpec"):
+		return &vitudevv1alpha1.KlusterSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NodePool"):
+		return &vitudevv1alpha1.NodePoolApplyConfiguration{}
+
 	}
 	return nil
 }
